@@ -3,17 +3,47 @@
 
     </head>
     <body>
-        
-
-
+        <div id="area"></div>
         <script src="../src/gumbyJS.js"></script>
         <script>
-            window.tmpdata = [
-            { "name" : "joe", children: [ { "name": "alice" } ] },
-            { "name" : "josh", children: [ { "name": "mike" }, { "name": "fred" } ] },
-            { "name" : "alvin", children: [ { "name": "alice" }, { "name": "aly" } ] },
-            { "name" : "marvin", children: [ { "name": "alice" } ] }
+            var data = [
+                { "name" : "joe", children: [ { "name": "alice" } ] },
+                { "name" : "josh", children: [ { "name": "mike" }, { "name": "fred" } ] },
+                { "name" : "alvin", children: [ { "name": "alice" }, { "name": "aly" } ] },
+                { "name" : "marvin", children: [ { "name": "alice" } ] }
             ];
+			
+			// xiny test
+			console.info(
+				gumby.xiny("[0][children][0][name]", data),
+				gumby.xiny("0.children.0.name", data),
+				gumby.xiny("[1].children[1].name", data),
+			);
+
+			// data
+			var dataOptions = {
+                sort: [ { "field" : "name", "direction" : "desc"} ],
+                pager: { page: 0, size: 25 },
+                filter: {
+                    filterOp: "AND",
+                    rules: [{
+                        field: "name",
+                        op: "in",
+                        value: "'jo'"
+                    }],
+                    filters: []
+                }
+            };
+			data = gumby.data.execute(data, dataOptions);
+			console.info(JSON.stringify(data));
+
+			// template
+			var template = "<table>" + 
+				"<thead><tr><th>Name</th><th>Children</th></tr></thead>" + 
+				"<tbody>{{data[]}}<tr><td>{{name}}</td><td>{{children[]}}{{name}},{{/children[]}}</td></tr>{{/data[]}}</tbody>" + 
+				"</table>";
+            var templateFn = gumby.template.generateFn(template);
+            document.querySelector("#area").innerHTML = templateFn({ "data" : data });
             debugger;
         </script>
     </body>

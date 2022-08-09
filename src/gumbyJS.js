@@ -249,7 +249,9 @@ gumby.data = (() => {
         options : (o) => {  
 			return _this.fns.bindOptions(o);			 
 		},
-		execute : (d) => {
+		execute : (d, o) => {
+            if(o)
+                _this.fns.bindOptions(o);
 			return _this.fns.load(d);
 		},
         help : () => {
@@ -272,7 +274,7 @@ gumby.data = (() => {
 
 gumby.template = (() => {
     if(!gumby.object) return console.error("gumby.object is required for gumby.template");
-    let _defaults = {
+    var _defaults = {
         tagOpen		:	"{{",
         tagClose	:	"}}",
         tagArray	:	"[]",
@@ -288,72 +290,75 @@ gumby.template = (() => {
             	_options = gumby.object.extend({}, _defaults, _options, opts);
             	return _options;
             },
+            tagFn: function(d, idx, ot, pt){
+                idx = idx || -1;
+                ot = ot || [];
+                pt = pt || [];
+                var 
+                    oi = d.indexOf(_options.tagOpen, idx),
+                    ci = d.indexOf(_options.tagClose, idx);
+                if(oi !== -1 && oi < ci){
+                    ot.unshift(oi);
+                    idx = oi + _options.tagOpen.length;
+                } else {
+                    var o = ot.shift();
+                    if(ot.length == 0){
+                        var
+                            s	=	o,
+                            e	=	ci + _options.tagClose.length,
+                            t	=	d.substr(s, e - s),
+                            f	=	_this.fns.fieldFn(t),
+                            a	=	t.indexOf(f + _options.tagArray) > -1,
+                            c	=	t.indexOf(_options.tagClosure + f + _options.tagArray) > -1,
+                            x	=	f.indexOf(_options.tagOpen) > -1 && f.indexOf(_options.tagClose) > -1,
+                            xf =	x ? _this.fns.fieldFn(f) : f;
+                        if(!a && !c && xf.length > 0){
+                            d = d.substr(0, s) + (x ? '" + (function(){ var v = ""; with(p){ try{ v = eval(' + xf + '); } catch(e) { console.warn(e); } return v; }; })() + "' : '" + ' + xf + ' + "') + d.substr(e);
+                        }
+                        if(a)
+                            if(!c){
+                                pt.unshift(f);
+                                d = d.substr(0, s) + '" + (function(o, p){ var t = ""; for(var i = 0; i < o.length; i++){ var itm = o[i]; with(itm){ t += "' + d.substr(e);
+                            }else {
+                                pt.shift();
+                                d = d.substr(0, s) + '"; } } return t; })(' + f + (pt.length > 0 ? ', itm' : '') + ') + "' + d.substr(e);
+                            }
+                    }
+                    idx = ci + _options.tagClose.length;
+                }					
+                if(oi !== -1 && ci !== -1)
+                    d = _this.fns.tagFn(d, idx, ot, pt);
+                
+                return d;
+            },
+            fieldFn : function(f){
+                if(f.indexOf(_options.tagOpen) === 0)
+                    f = f.substr(_options.tagOpen.length, f.length - _options.tagOpen.length);
+                if(f.indexOf(_options.tagClosure) === 0)
+                    f = f.substr(_options.tagClosure.length, f.length - _options.tagClosure.length);
+                if(f.indexOf(_options.tagClose, f.length - _options.tagClose.length) > -1)
+                    f = f.substr(0, f.length - _options.tagClose.length);
+                if(f.indexOf(_options.tagArray, f.length - _options.tagArray.length) > -1)
+                    f = f.substr(0, f.length - _options.tagArray.length);
+                return f;
+            },
             generateFn: function(template){
                 if(_this.vars.cache[template]) return _this.vars.cache[template];				
-                let 
-                    data = template.slice().replace(/\r/g, "\\r").replace(/\n/g,"\\n"),
-                    tagF = function(d, idx, ot, pt){
-                        idx = idx || -1;
-                        ot = ot || [];
-                        pt = pt || [];
-                        let 
-                            oi = d.indexOf(_options.tagOpen, idx),
-                            ci = d.indexOf(_options.tagClose, idx),
-                            fieldFn = function(tag){
-                                let f = tag;
-                                    if(f.indexOf(_options.tagOpen) === 0)
-                                        f = f.substr(_options.tagOpen.length, f.length - _options.tagOpen.length);
-                                    if(f.indexOf(_options.tagClosure) === 0)
-                                        f = f.substr(_options.tagClosure.length, f.length - _options.tagClosure.length);
-                                    if(f.indexOf(_options.tagClose, f.length - _options.tagClose.length) > -1)
-                                        f = f.substr(0, f.length - _options.tagClose.length);
-                                    if(f.indexOf(_options.tagArray, f.length - _options.tagArray.length) > -1)
-                                        f = f.substr(0, f.length - _options.tagArray.length);
-                                return f;
-                            };
-
-                        if(oi !== -1 && oi < ci){
-                            ot.unshift(oi);
-                            idx = oi + _options.tagOpen.length;
-                        } else {
-                            let o = ot.shift();
-                            if(ot.length == 0){
-                                let
-                                    s	=	o,
-                                    e	=	ci + _options.tagClose.length,
-                                    t	=	d.substr(s, e - s),
-                                    f	=	fieldFn(t),
-                                    a	=	t.indexOf(f + _options.tagArray) > -1,
-                                    c	=	t.indexOf(_options.tagClosure + f + _options.tagArray) > -1,
-                                    x	=	f.indexOf(_options.tagOpen) > -1 && f.indexOf(_options.tagClose) > -1,
-                                    xf	=	x ? fieldFn(f) : f;
-                                if(!a && !c && xf.length > 0){
-                                    d = d.substr(0, s) + (x ? '" + (function(){ var gzv = ""; with(parent){ try{ gzv = eval(' + xf + '); } catch(error) { console.warn(error); } return gzv; }; })() + "' : '" + ' + xf + ' + "') + d.substr(e);
-                                }
-                                if(a)
-                                    if(!c){
-                                        pt.unshift(f);
-                                        d = d.substr(0, s) + '" + (function(gzo, parent){ var gzt = ""; for(var gzi = 0; gzi < gzo.length; gzi++){ var index = gzi, item = gzo[gzi]; with(item){ gzt += "' + d.substr(e);
-                                    }else {
-                                        let p = pt.shift();
-                                        d = d.substr(0, s) + '"; } } return gzt; })(' + f + (pt.length > 0 ? ', item' : '') + ') + "' + d.substr(e);
-                                    }							
-                            }
-                            idx = ci + _options.tagClose.length;
-                        }					
-                        if(oi !== -1 && ci !== -1) d = tagF(d, idx, ot, pt);
-                        return d;
-                    };
-                let f = tagF(data);
-                let fn = new Function("root", "with(root){ return \"" + f + "\"; };");
+                var d = template.slice().replace(/\r/g, "\\r").replace(/\n/g,"\\n");
+                    
+                var f = _this.fns.tagFn(d);
+                var fn = new Function("r", "with(r){ return \"" + f + "\"; };");
                 _this.vars.cache[template] = fn;
                 return fn;
             },
             generateDom: function(str){
-                try{
+                try
+                {
                     var d = new DOMParser().parseFromString(str, 'text/html');
                     return d.body.children;
-                }catch(err){
+                }
+                catch(err)
+                {
                     var d = document.createElement('div');
                         d.innerHTML = str;
                     return d.children;
@@ -373,3 +378,4 @@ gumby.template = (() => {
 		}    
     }
 })();
+
