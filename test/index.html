@@ -7,31 +7,44 @@
         <script src="../src/gumbyJS.js"></script>
         <script>
             var data = [
-                { "name" : "joe", children: [ { "name": "alice" } ] },
-                { "name" : "josh", children: [ { "name": "mike" }, { "name": "fred" } ] },
-                { "name" : "alvin", children: [ { "name": "alice" }, { "name": "aly" } ] },
-                { "name" : "marvin", children: [ { "name": "alice" } ] }
+                { name : "joe", children: [ { name: "alice" } ] },
+                { name : "josh", children: [ { name: "mike" }, { name: "ted" } ] },
+                { name : "alvon", children: [ { name: "amanda" }, { name: "fred" } ] },
+                { name : "marvin", children: [ { name: "peter" } ] }
             ];
 			
 			// xiny test
-			console.info(
-				gumby.xiny("[0][children][0][name]", data),
-				gumby.xiny("0.children.0.name", data),
-				gumby.xiny("[1].children[1].name", data),
-			);
+            [
+                "[*].name",
+                "[1].children[*].name",
+                "[*].children[1].name",
+                "0.children.0.name",
+                "[1].children[1].name"
+            ].forEach(s => {
+                console.info(s + " =", gumby.xiny(s, data));
+            });
 
 			// data
 			var dataOptions = {
-                sort: [ { "field" : "name", "direction" : "desc"} ],
+                sort: [
+                    { "field": "name", "direction": "asc" },
+                    { "field": "children[1].name", "direction": "desc" },
+                ],
                 pager: { page: 0, size: 25 },
                 filter: {
-                    filterOp: "AND",
-                    rules: [{
-                        field: "name",
-                        op: "in",
-                        value: "'jo'"
-                    }],
-                    filters: []
+                    filterOp: "OR",
+                    rules: [
+                        {
+                            field: "children[0].name",
+                            op: "in",
+                            value: "a"
+                        },
+                        {
+                            field: "children[0].name",
+                            op: "in",
+                            value: "e"
+                        }
+                    ]
                 }
             };
 			data = gumby.data.execute(data, dataOptions);
