@@ -1,0 +1,120 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        th.asc::after {
+            content: ' \2191';
+        }
+        th.desc::after {
+            content: ' \2193';
+        }
+    </style>
+</head>
+<body>
+    <div id="tableArea">
+        <div><input type="search" id="tableSearch" placeholder="Search..." /></div>
+        <table id="table" class="table table-hover">
+            <thead>
+                <tr>
+                    <th name='index'>Index</th>
+                    <th name='picture'>Picture</th>
+                    <th name='name'>Name</th>
+                    <th name='age'>Age</th>
+                    <th name='friends[0].name'>Friends</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="testData.js"></script>
+    <script src="../src/gumbyJS.js"></script>
+    <script>
+        ((data) => {
+            var table = document.querySelector("#table");
+            var head = table.querySelector("thead");
+            var body = table.querySelector("tbody");
+
+            var tableOptions = { filter: {}, sort: [], pager: { page: 0, size: 25 } };
+
+            // body render
+            var renderFn = function () {
+                // generate loading body
+                body.innerHTML = "<tbody><tr><td colspan='5'>Loading...</td></tr></tbody>";
+
+                // filtered/sorted/paged data
+                var processedData = gumby.data.execute(data, tableOptions);
+
+                // build template based on result length
+                var template = processedData.length > 0                    
+                    ? "<tbody>{{data[*]}}<tr><td>{{index}}</td><td><img src='{{picture}}' title='{{name}}' /></td><td>{{name}}</td><td>{{age}}</td><td>{{friends[*]}}{{name}},&nbsp;{{/friends[*]}}</td></tr>{{/data[*]}}</tbody>"
+                    : "<tbody><tr><td colspan='5'>No Data</td></tr></tbody>";
+
+                // generate/cache fn that will build based on data passed in
+                var tbodyFn = gumby.template.generateFn(template);
+
+                // generate html with filtered/sorted/paged data
+                body.innerHTML = tbodyFn({ "data": processedData });
+            };
+
+            // search binding
+            document
+                .querySelector("#tableSearch")
+                .addEventListener("keyup", function (e) {
+                    var val = this.value;
+
+                    // build filter for all fields
+                    tableOptions.filter = {
+                        filterOp: "OR",
+                        rules: Array.from(head.querySelectorAll("th"))
+                            .map(o => {
+                                return {
+                                    "field": o.getAttribute("name"),
+                                    "op": "iin",
+                                    "value": val
+                                };
+                            })
+                    };
+
+                    // call re-render
+                    renderFn();
+                });
+
+            // sort binding
+            head.querySelectorAll("th")
+                .forEach(function (header) {
+                    header
+                        .addEventListener("click", function (a, i, e) {
+                            // handle class toggle for 3 states, asc, desc, none
+                            if (this.className.indexOf("asc") > -1) {
+                                this.classList.toggle("asc");
+                                this.classList.toggle("desc");
+                            } else if (this.className.indexOf("desc") > -1) {
+                                this.classList.toggle("desc");
+                            } else {
+                                this.classList.toggle("asc");
+                            }
+
+                            // build sort from the classes assigned to the headers
+                            tableOptions.sort = Array.from(head.querySelectorAll("th"))
+                                .filter(o => { return o.className.indexOf("asc") > -1 || o.className.indexOf("desc") > -1; })
+                                .map(o => {
+                                    return {
+                                        "field": o.getAttribute("name"),
+                                        "direction": o.className
+                                    };
+                                });
+
+                            // call re-render
+                            renderFn();
+                        });
+                });
+            // call main load render
+            renderFn();
+        })(testData);
+        debugger;
+        gumby.xiny("[0]", "test");
+    </script>
+</body>
+</html>

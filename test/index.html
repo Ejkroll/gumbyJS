@@ -1,63 +1,49 @@
 <html>
-    <head>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        th {
+            background-color: #ccc;
+        }
+        th.asc::after {
+            content: ' \2191';
+        }
+        th.desc::after {
+            content: ' \2193';
+        }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <h2>Test Output</h2>
+        <div id="testOutput">
 
-    </head>
-    <body>
-        <div id="area"></div>
-        <script src="../src/gumbyJS.js"></script>
-        <script>
-            var data = [
-                { name : "joe", children: [ { name: "alice" } ] },
-                { name : "josh", children: [ { name: "mike" }, { name: "ted" } ] },
-                { name : "alvon", children: [ { name: "amanda" }, { name: "fred" } ] },
-                { name : "marvin", children: [ { name: "peter" } ] }
-            ];
-			
-			// xiny test
-            [
-                "[*].name",
-                "[1].children[*].name",
-                "[*].children[1].name",
-                "0.children.0.name",
-                "[1].children[1].name"
-            ].forEach(s => {
-                console.info(s + " =", gumby.xiny(s, data));
-            });
-
-			// data
-			var dataOptions = {
-                sort: [
-                    { "field": "name", "direction": "asc" },
-                    { "field": "children[1].name", "direction": "desc" },
-                ],
-                pager: { page: 0, size: 25 },
-                filter: {
-                    filterOp: "OR",
-                    rules: [
-                        {
-                            field: "children[0].name",
-                            op: "in",
-                            value: "a"
-                        },
-                        {
-                            field: "children[0].name",
-                            op: "in",
-                            value: "e"
-                        }
-                    ]
-                }
-            };
-			data = gumby.data.execute(data, dataOptions);
-			console.info(JSON.stringify(data));
-
-			// template
-			var template = "<table>" + 
-				"<thead><tr><th>Name</th><th>Children</th></tr></thead>" + 
-				"<tbody>{{data[]}}<tr><td>{{name}}</td><td>{{children[]}}{{name}},{{/children[]}}</td></tr>{{/data[]}}</tbody>" + 
-				"</table>";
-            var templateFn = gumby.template.generateFn(template);
-            document.querySelector("#area").innerHTML = templateFn({ "data" : data });
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="testData.js"></script>
+    <script src="../src/gumbyJS.js"></script>
+    <script>
+        debugger;
+        let output = document.querySelector("#testOutput");
+        // xiny test
+        output.innerHTML += "<h4>xiny:</h4>";
+        [
+            "[*].name",
+            "[" + gumby.rnd(0, 9) + "].friends[*].name",
+            "[" + gumby.rnd(0, 9) + "].tags[0]"
+        ].forEach(s => {
             debugger;
-        </script>
-    </body>
+            output.innerHTML += s + " =" + gumby.xiny(s, testData).toString() + "</br>";
+        });
+
+        output.innerHTML += "<h4>extend:</h4>";
+        let ext1 = { name: "fred" },
+            ext2 = { age: 25 };
+
+        output.innerHTML += "A = " + JSON.stringify(ext1) + "</br>";
+        output.innerHTML += "B = " + JSON.stringify(ext2) + "</br>";
+        output.innerHTML += "Result = " + JSON.stringify(gumby.extend({}, ext1, ext2)) + "</br>";
+    </script>
+</body>
 </html>
