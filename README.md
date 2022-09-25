@@ -47,16 +47,14 @@ The gumby.data library is a simple data management library used to apply Filter,
 
 var dataOptions = { 
   filter: {
+    filterOp: "OR",
+    rules: [
     {
-      filterOp: "OR",
-      rules: [
-        {
-          field: "first",
-          op: "iin",
-          value: "bob"
-        }
-      ]
+        field: "first",
+        op: "iin",
+        value: "bob"
     }
+    ]
   },
   sort: [
     {
