@@ -208,7 +208,7 @@ gumby.pubsub = (() => {
     };
     return {
         publish: function(name){
-            _this.fns.publish.apply(this, [name]);
+            _this.fns.publish.apply(this, arguments);
         },
         subscribe: function(name, callback){
             _this.fns.subscribe.apply(this, [name, callback]);

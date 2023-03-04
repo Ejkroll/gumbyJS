@@ -13,37 +13,57 @@
         }
     </style>
 </head>
-<body>
+<body class="container-fluid">
     <div class="row">
-        <h2>Test Output</h2>
-        <div id="testOutput">
-
+        <h2>gumbyJS - Core</h2>
+        <div class="col row">
+            <h4>Input:</h6>
+            <div class="px-5 col">
+                <textarea id="testInput" class="w-100" rows="20" readonly="readonly"></textarea>
+            </div>            
+            <hr />
+            <h4>Output:</h6>
+            <div class="px-5 col">
+                <div id="testOutput" class="w-100"></div>
+            </div>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
     <script>
-        debugger;
-        let output = document.querySelector("#testOutput");
+        let input = document.querySelector("#testInput");
+        input.innerHTML = JSON.stringify(testData, null, 4);
+
         // xiny test
+        let output = document.querySelector("#testOutput");                
         output.innerHTML += "<h4>xiny:</h4>";
         [
             "[*].name",
             "[" + gumby.rnd(0, 9) + "].friends[*].name",
-            "[" + gumby.rnd(0, 9) + "].tags[0]"
+            "[" + gumby.rnd(0, 9) + "].tags[0]",
+            "[" + gumby.rnd(0, 9) + "].tags[" + gumby.rnd(0, 9) + "][" + gumby.rnd(0, 9) + "]"
         ].forEach(s => {
-            debugger;
-            output.innerHTML += s + " =" + gumby.xiny(s, testData).toString() + "</br>";
+            var val = gumby.xiny(s, testData);
+            output.innerHTML += "<div class='px-5 w-100'>gumby.xiny('" + s + "', testData) = " + JSON.stringify(val) + "</div>";
         });
 
+        // extend test
         output.innerHTML += "<h4>extend:</h4>";
         let ext1 = { name: "fred" },
             ext2 = { age: 25 };
 
-        output.innerHTML += "A = " + JSON.stringify(ext1) + "</br>";
-        output.innerHTML += "B = " + JSON.stringify(ext2) + "</br>";
-        output.innerHTML += "Result = " + JSON.stringify(gumby.extend({}, ext1, ext2)) + "</br>";
+        output.innerHTML += "<div class='px-5 w-100'>A = " + JSON.stringify(ext1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>B = " + JSON.stringify(ext2) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.extend({}, ext1, ext2)) + "</div>";
+
+        // xtoy
+        output.innerHTML += "<h4>xtoy:</h4>";
+        let xty1 = { name: "fred" },
+            xty2 = { age: 25 };
+        output.innerHTML += "<div class='px-5 w-100'>X = " + JSON.stringify(xty1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>Y = " + JSON.stringify(xty2) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.xtoy(ext1, ext2)) + "</div>";
     </script>
 </body>
 </html>
