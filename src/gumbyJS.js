@@ -33,7 +33,11 @@ gumby = (() => {
                 let m = function (o) {
                     for (var p in o) {
                         if (!Object.prototype.hasOwnProperty.call(o, p)) continue;
-                        e[p] = d && Object.prototype.toString.call(o[p]) === '[object Object]' ? s.extend.apply(s, [true, e[p], o[p]]) : o[p];
+                        e[p] = d && Object.prototype.toString.call(o[p]) === '[object Object]' 
+                            ? s.extend.apply(s, [true, e[p], o[p]]) 
+                            : Array.isArray(o[p])
+                                ? (e[p] || []).concat(o[p])
+                                : o[p];
                     }
                 };
                 for (; i < arguments.length; i++)  m(arguments[i]);
