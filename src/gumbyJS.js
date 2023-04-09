@@ -14,7 +14,16 @@ gumby = (() => {
     'use strict';
 
     let _this = {
+        vars: {
+            noop: function(){ }
+        },
         fns: {
+            _isArr: o => Array.isArray(o),
+            _hasProp: (o, p) => Object.prototype.hasOwnProperty.call(o, p),
+            _rnd: (min, max) => Math.floor((Math.random() * max) + min),
+            _type: o => Object.prototype.toString.call(o),
+            _typeMatch: (x, y) => Object.prototype.toString.call(x) === Object.prototype.toString.call(y),
+
             clone: (o) => {
                 if (o === null || typeof (o) !== 'object') return o;
                 let temp = o.constructor();
@@ -27,30 +36,43 @@ gumby = (() => {
                 }
                 return temp;
             },
-            extend: function () {
+            combine: function () {
                 let s = _this.fns, e = {}, d = false, i = 0;
-                if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]') { d = arguments[0]; i++; }
+                if (s._type(arguments[0]) === '[object Boolean]') { d = arguments[0]; i++; }
                 let m = function (o) {
                     for (var p in o) {
-                        if (!Object.prototype.hasOwnProperty.call(o, p)) continue;
-                        e[p] = d && Object.prototype.toString.call(o[p]) === '[object Object]' 
-                            ? s.extend.apply(s, [true, e[p], o[p]]) 
-                            : Array.isArray(o[p])
+                        if (!s._hasProp(o, p)) continue;
+                        e[p] = d && s._type(o[p]) === '[object Object]' 
+                            ? s.combine.apply(s, [d, c, e[p], o[p]]) 
+                            : s._isArr(o[p])
                                 ? (e[p] || []).concat(o[p])
                                 : o[p];
                     }
                 };
                 for (; i < arguments.length; i++)  m(arguments[i]);
                 return e;
-            },
-            rnd: (min, max) => Math.floor((Math.random() * max) + min),
+            },     
+            extend: function () {
+                let s = _this.fns, e = {}, d = false, i = 0;
+                if (s._type(arguments[0]) === '[object Boolean]') { d = arguments[0]; i++; }
+                let m = function (o) {
+                    for (var p in o) {
+                        if (!s._hasProp(o, p)) continue;
+                        e[p] = d && s._type(o[p]) === '[object Object]' 
+                            ? s.extend.apply(s, [d, e[p], o[p]])
+                            : o[p];
+                    }
+                };
+                for (; i < arguments.length; i++)  m(arguments[i]);
+                return e;
+            },            
             xiny: (x, y, c) => {
-                let ns = (x || "").replace(/\[|\]/g, '.').split(".").filter(n => { return n != ""; }),
+                let s = _this.fns, ns = (x || "").replace(/\[|\]/g, '.').split(".").filter(n => { return n != ""; }),
                     fn = (ns, o, c) => {
                         let n = ns[0];
                         if (!n || !o) return o;
                         ns = ns.slice(1);
-                        if (Array.isArray(o) && n === "*") return o.map(e => fn(ns, e, c));
+                        if (s._isArr(o) && n === "*") return o.map(e => fn(ns, e, c));
                         if (!c) return fn(ns, o[n] !== undefined ? o[n] : undefined, c);
                         for (let f in o)
                             if (f.toLowerCase() === n.toLowerCase())
@@ -59,23 +81,34 @@ gumby = (() => {
                 return y ? fn(ns, y, c) : y;
             },
             xtoy: (x, y, e) => {
-                x = x || {};
-                y = y || {};
+                let s = _this.fns;
+                if(!s._typeMatch(x, y)) return console.error("object type mismatch!");
+                y = y || (s._isArr(x) ? [] : {});
                 for (let p in x)
-                    y[p] = e ? y[p] ? x[p] : y[p] : x[p];
+                    y[p] = typeof x[p] == "object" 
+                        ? _this.fns.xtoy(x[p], y[p], e) 
+                        : e 
+                            ? y[p] 
+                                ? x[p]
+                                : y[p] 
+                            : x[p];
                 return y;
             }
         }
     };
 
     return {
+        rnd: (min, max) => _this.fns._rnd(min, max),
+
         clone: (o) => _this.fns.clone(o),
+        combine: function () {
+            return _this.fns.combine.apply(this, arguments);
+        },                
         extend: function () {
             return _this.fns.extend.apply(this, arguments);
-        },
-        rnd: (min, max) => _this.fns.rnd(min, max),
-        xiny: (x, y, c) => _this.fns.xiny(x, y, c),
-        xtoy: (x, y, e) => _this.fns.xtoy(x, y, e)
+        },        
+        xiny: (x, y, caseInsensitive) => _this.fns.xiny(x, y, caseInsensitive),
+        xtoy: (x, y, existingOnly) => _this.fns.xtoy(x, y, existingOnly)
     };
 })();
 

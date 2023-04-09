@@ -50,20 +50,25 @@
 
         // extend test
         output.innerHTML += "<h4>extend:</h4>";
-        let ext1 = { name: "fred" },
-            ext2 = { age: 25 };
+        let ext1 = { name: "fred", children: [ { name: "joey" } , { name: "alice" } ] },
+            ext2 = { name: "jeff", age: 25, children: [ { name: "sarah" } ] };
 
         output.innerHTML += "<div class='px-5 w-100'>A = " + JSON.stringify(ext1) + "</div>";
         output.innerHTML += "<div class='px-5 w-100'>B = " + JSON.stringify(ext2) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.extend({}, ext1, ext2)) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.extend(true, {}, ext1, ext2)) + "</div>";
 
         // xtoy
+        // x = source
+        // y = destination
+        // e = existing properties        
         output.innerHTML += "<h4>xtoy:</h4>";
-        let xty1 = { name: "fred" },
-            xty2 = { age: 25 };
+        let xty1 = { test: [{ name: "fred", age: 21 }] },
+            xty2 = { test: [{ name: "jeff", Sge: 25, location: "here" }] };
         output.innerHTML += "<div class='px-5 w-100'>X = " + JSON.stringify(xty1) + "</div>";
         output.innerHTML += "<div class='px-5 w-100'>Y = " + JSON.stringify(xty2) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.xtoy(ext1, ext2)) + "</div>";
+        var xtyr = gumby.xtoy(xty1, xty2);
+        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(xtyr) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(xty2) + "</div>";
     </script>
 </body>
 </html>
