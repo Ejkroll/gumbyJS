@@ -1,0 +1,44 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="container-fluid">
+    <div class="row">
+        <div class="col-4 vh-100 overflow-auto border-end" id="leftpane"></div>
+        <div class="col-8 vh-100 overflow-auto" id="rightpane"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="testData.js"></script>
+    <script src="../src/gumbyJS.js"></script>
+    <script>
+        document.querySelector("#leftpane").innerHTML = "<strong>dataset:</strong><br/>" + JSON.stringify(testData2, null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
+
+        let tests = [
+            "$.store.book[*].author",
+            "$..author",
+            "$.store.*",
+            "$.store..price",
+            "$..book[2]",
+            "$..book[(@.length-1)]",
+            "$..book[-1:]",
+            "$..book[0,1]",
+            "$..book[:2]",
+            "$..book[?(@.isbn)]",
+            "$..book[?(@.price<10)]",
+            "$..*"
+        ];
+
+        document.querySelector("#rightpane").innerHTML = "" + 
+            "<table class='table w-100'>" + 
+                "<thead><tr><th>Command</th><th>Result</th></tr></thead>" + 
+                "<tbody>" +
+                    gumbyJS.shape("$.[*]", tests, (t) => {
+                        let result = JSON.stringify(gumbyJS.shape(t, testData2), null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
+                        return `<tr><td valign='top'>gumbyJS.shape('${t}', dataset);</td><td>${result}</td></tr>`;
+                    }).join('') +
+                "</tbody>" +
+            "</table>";
+    </script>
+</body>
+</html>
