@@ -1,0 +1,38 @@
+@namespace url(http://www.w3.org/1999/xhtml);
+body {
+    background-color:#777;
+}
+@media (min-width: 500px) {
+    body {
+      color: blue;
+    }
+  }
+
+  @keyframes slidein {
+    from {
+      transform: translateX(0%);
+    }
+  
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @counter-style box-corner {
+    system: fixed;
+    symbols: ◰ ◳ ◲ ◱;
+    suffix: ": ";
+    fallback: disc;
+  }
+
+  @supports (display: grid) {
+    body {
+      color: blue;
+    }
+  }
+  @layer special {
+    p {
+      color: rebeccapurple;
+    }
+  }
+  @layer layerName, layerName2;

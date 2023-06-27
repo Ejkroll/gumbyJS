@@ -149,7 +149,7 @@
             if(!result) return result;
             var ret = fns._isArr(result) ? result : [result];
             if(typeof callback === "function")
-                ret = ret.map(o => callback.call(exports, o));
+                ret = ret.map((e, i, a) => callback.apply(exports, [e, i, a]));
             return ret.length > 1 ? ret : ret[0];
         },
         shapeRecursiveDescendantOperator: (obj) => {

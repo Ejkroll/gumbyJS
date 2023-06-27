@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="test.css" /> -->
     <style>
         th {
             background-color: #ccc;
@@ -16,15 +17,19 @@
 <body class="container-fluid">
     <div class="row">
         <h2>gumbyJS - Core</h2>
-        <div class="col row">
-            <h4>Input:</h6>
-            <div class="px-5 col">
-                <textarea id="testInput" class="w-100" rows="20" readonly="readonly"></textarea>
-            </div>            
-            <hr />
-            <h4>Output:</h6>
-            <div class="px-5 col">
-                <div id="testOutput" class="w-100"></div>
+        <div class="col">
+            <div class="row">
+                <h4>Input:</h6>
+                <div class="px-5 col">
+                    <textarea id="testInput" class="w-100" rows="20" readonly="readonly"></textarea>
+                </div>           
+            </div> 
+            <br/>
+            <div class="row">
+                <h4>Output:</h6>
+                <div class="px-5 col">
+                    <div id="testOutput" class="w-100"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -32,11 +37,19 @@
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
     <script>
-        let input = document.querySelector("#testInput");
+        let input = document.querySelector("#testInput"),
+            output = document.querySelector("#testOutput");
+
         input.innerHTML = JSON.stringify(testData, null, 4);
 
-        // xiny test
-        let output = document.querySelector("#testOutput");                
+        //clone
+        output.innerHTML += "<h4>clone:</h4>";
+        let clone1 = { name: "mak", children: [ { name: "julie" }, { name: "peter" } ] };
+
+        output.innerHTML += "<div class='px-5 w-100'>var a = " + JSON.stringify(clone1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>gumby.clone(a) = " + JSON.stringify(gumby.clone(clone1)) + "</div>";
+
+        // xiny        
         output.innerHTML += "<h4>xiny:</h4>";
         [
             "[*].name",
@@ -48,27 +61,32 @@
             output.innerHTML += "<div class='px-5 w-100'>gumby.xiny('" + s + "', testData) = " + JSON.stringify(val) + "</div>";
         });
 
-        // extend test
+        // combine
+        output.innerHTML += "<h4>combine:</h4>";
+        let combine1 = { name: "steve", children: [ { name: "joli" } ] },
+            combine2 = { name: "jeff", age: 25, children: [ { name: "anthony" } ] };
+
+        output.innerHTML += "<div class='px-5 w-100'>var a = " + JSON.stringify(combine1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>var b = " + JSON.stringify(combine2) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>gumby.combine(true, {}, a, b) = " + JSON.stringify(gumby.combine(true, {}, combine1, combine2)) + "</div>";
+
+        // extend
         output.innerHTML += "<h4>extend:</h4>";
         let ext1 = { name: "fred", children: [ { name: "joey" } , { name: "alice" } ] },
             ext2 = { name: "jeff", age: 25, children: [ { name: "sarah" } ] };
 
-        output.innerHTML += "<div class='px-5 w-100'>A = " + JSON.stringify(ext1) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>B = " + JSON.stringify(ext2) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(gumby.extend(true, {}, ext1, ext2)) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>var a = " + JSON.stringify(ext1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>var b = " + JSON.stringify(ext2) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>gumby.extend(true, {}, a, b) = " + JSON.stringify(gumby.extend(true, {}, ext1, ext2)) + "</div>";
 
         // xtoy
-        // x = source
-        // y = destination
-        // e = existing properties        
         output.innerHTML += "<h4>xtoy:</h4>";
-        let xty1 = { test: [{ name: "fred", age: 21 }] },
-            xty2 = { test: [{ name: "jeff", Sge: 25, location: "here" }] };
-        output.innerHTML += "<div class='px-5 w-100'>X = " + JSON.stringify(xty1) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>Y = " + JSON.stringify(xty2) + "</div>";
+        let xty1 = { test: [{ name: "leah", age: 21 }] },
+            xty2 = { test: [{ name: "alice", Sge: 25, location: "here" }] };
+        output.innerHTML += "<div class='px-5 w-100'>var x = " + JSON.stringify(xty1) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>var y = " + JSON.stringify(xty2) + "</div>";
         var xtyr = gumby.xtoy(xty1, xty2);
-        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(xtyr) + "</div>";
-        output.innerHTML += "<div class='px-5 w-100'>Result = " + JSON.stringify(xty2) + "</div>";
+        output.innerHTML += "<div class='px-5 w-100'>gumby.xtoy(x, y) = " + JSON.stringify(xtyr) + "</div>";
     </script>
 </body>
 </html>

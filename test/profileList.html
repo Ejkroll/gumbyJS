@@ -4,35 +4,32 @@
 </head>
 <body>
     <div class="row d-flex justify-content-center">
-        <div class="profileList col-md-6">
+        <div id="profileList" class="col-md-6"></div>
+        <template id="profileListTemplate">
             {{data[*]}}
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col-auto d-none d-lg-block">
-                    <img src="{{picture}}" class="bd-placeholder-img" width="200" height="250" />
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col-auto d-none d-lg-block">
+                        <img src="{{picture}}" class="bd-placeholder-img" width="200" height="250" />
+                    </div>
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <h3 class="mb-0">{{name}}</h3>
+                        <strong class="d-inline-block mb-2">{{address}}</strong>
+                        <div class="mb-1 text-muted">{{phone}}&nbsp;|&nbsp;{{email}}</div>
+                        <p class="mb-auto pb-2">{{about}}</p>
+                        <div><span class="fw-bold">Alternate&nbsp;Contact:</span>&nbsp;{{(() => {{friends[*].name}}.join(' likes '))()}}</div>
+                        <div><span class="fw-bold">Tags:</span>&nbsp;{{tags[*]}}</div>
+                    </div>
                 </div>
-                <div class="col p-4 d-flex flex-column position-static">
-                    <h3 class="mb-0">{{name}}</h3>
-                    <strong class="d-inline-block mb-2">{{address}}</strong>
-                    <div class="mb-1 text-muted">{{phone}}&nbsp;|&nbsp;{{email}}</div>
-                    <p class="mb-auto pb-2">{{about}}</p>
-                    <div><span class="fw-bold">Alternate&nbsp;Contact:</span>&nbsp;{{friends[0].name}}</div>
-                    <div><span class="fw-bold">Tags:</span>&nbsp;{{tags[*]}}</div>
-                </div>
-            </div>
             {{/data[*]}}
-        </div>
+        </template>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
     <script>
         ((data) => {
-            //Array.from(document.querySelectorAll(".profileList"))
-            document.querySelectorAll(".profileList")
-                .forEach(o => {
-                    var fn = gumby.template.generateFn(o.innerHTML);
-                    o.innerHTML = fn({ "data": data });
-                });
+            var templateFn = gumby.template.generateFn(document.querySelector("#profileListTemplate").innerHTML);
+            document.querySelector("#profileList").innerHTML = templateFn({ "data": data });
         })(testData);
     </script>
 </body>
