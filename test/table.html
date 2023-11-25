@@ -12,6 +12,7 @@
 </head>
 <body>
 <!-- <template id="tableSample"> -->
+    <div id="hold"></div>
     <div><input type="search" id="tableSampleSearch" placeholder="Search..." /></div>
     <table id="table" class="table table-hover">
         <thead>
@@ -25,12 +26,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
-    <script src="../src/gumbyJS.data.js"></script>
-    <script src="../src/gumbyJS.template.js"></script>
-    <script src="../src/gumbyJS.table.js"></script>
-    <script>        
+    <script src="../src/gumbyJS.table.js"></script> 
+    <script src="../src/gumbyJS.data.js"></script> 
+    <script>
+        debugger;
         var table = gumbyJS.table({
-            id: "testtable",
+            id: "table",
             columns : [
                 { field : "_id", class : "d-none", key: true },
                 { field : "guid", class : "d-none", key: true },
@@ -43,6 +44,32 @@
             data : testData
         });
 
+        // var build = function(data){
+        //     var table = document.querySelector("#hold");
+        //     var output = gumbyJS.shape("[*]", data, (item, index, data) => {
+        //         return "<div>" + item._id + "</div>";
+        //     });
+        //     table.innerHTML = output.join('');
+        // }
+        // var filter = function(filter){
+        //     var data = gumbyJS.scope(testData, filter, build);
+        //     build(data);
+        // }
+        // debugger;
+
+        //filter({ filter: { filterOp: "and", rules: [ { field: "phone", value: "55", op: "in" } ], filters: [] } });
+        // var table = gumby($("#table"), testData)
+        //     .Scope(testData
+        //     {
+        //         filter: ""
+        //     })
+        //     .Shape("")
+
+        
+
+        // gumby.scope(testData, {
+
+        // });
         // var tableOptions = { filter: {}, sort: [], pager: { page: 0, size: 25 }, verbose: true };
 
         // // body render

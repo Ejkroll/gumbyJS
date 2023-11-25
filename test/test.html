@@ -4,16 +4,25 @@
 </head>
 <body class="container-fluid">
     <div class="row">
-        <div class="col-4 vh-100 overflow-auto border-end" id="leftpane"></div>
-        <div class="col-8 vh-100 overflow-auto" id="rightpane"></div>
+        <div class="col-4 vh-100 overflow-auto border-end" id="leftpane">
+            <table class="table w-100">
+                <thead><tr><th>Dataset:</th></tr></thead>
+                <tbody><tr><td></td></tr></thead>
+            </table>
+        </div>
+        <div class="col-8 vh-100 overflow-auto" id="rightpane">
+            <table class="table w-100">
+                <thead><tr><th>Command</th><th>Result</th></tr></thead>
+                <tbody></thead>
+            </table>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
     <script>
-        document.querySelector("#leftpane").innerHTML = "<strong>dataset:</strong><br/>" + JSON.stringify(testData2, null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
-
         let tests = [
             "$.store.book[*].author",
             "$..author",
@@ -29,16 +38,16 @@
             "$..*"
         ];
 
-        document.querySelector("#rightpane").innerHTML = "" + 
-            "<table class='table w-100'>" + 
-                "<thead><tr><th>Command</th><th>Result</th></tr></thead>" + 
-                "<tbody>" +
-                    gumbyJS.shape("$.[*]", tests, (t) => {
-                        let result = JSON.stringify(gumbyJS.shape(t, testData2), null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
-                        return `<tr><td valign='top'>gumbyJS.shape('${t}', dataset);</td><td>${result}</td></tr>`;
-                    }).join('') +
-                "</tbody>" +
-            "</table>";
+        document.querySelector("#leftpane").querySelector("td").innerHTML = JSON.stringify(testData2, null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
+        document.querySelector("#rightpane").querySelector("tbody").innerHTML = (function(){
+            console.time('Execution Time');
+            var ret = gumby.shape("$.[*]", tests, (t) => {
+                let result = JSON.stringify(gumby.shape(t, testData2), null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
+                return `<tr><td valign='top'>gumby.shape('${t}', dataset);</td><td>${result}</td></tr>`;
+            }).join("");
+            console.timeEnd('Execution Time');
+            return ret;
+        })();
     </script>
 </body>
 </html>

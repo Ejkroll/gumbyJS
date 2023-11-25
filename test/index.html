@@ -1,22 +1,36 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" referrerpolicy="no-referrer" />
     <!-- <link rel="stylesheet" href="test.css" /> -->
     <style>
-        th {
-            background-color: #ccc;
-        }
-        th.asc::after {
-            content: ' \2191';
-        }
-        th.desc::after {
-            content: ' \2193';
-        }
+        th { background-color: #ccc; }
+        th.asc::after { content: ' \2191'; }
+        th.desc::after { content: ' \2193'; }
     </style>
 </head>
 <body class="container-fluid">
+    <h2>gumbyJS</h2>
     <div class="row">
-        <h2>gumbyJS - Core</h2>
+        <div class="col-4 vh-100 overflow-auto border-end" id="leftpane">
+            <table class="table w-100">
+                <thead><tr><th>Dataset:</th></tr></thead>
+                <tbody><tr><td></td></tr></thead>
+            </table>
+        </div>
+        <div class="col-8 vh-100 overflow-auto" id="rightpane">
+            <h4>Output:</h6>
+                <div class="px-5 col">
+                    <div id="testOutput" class="w-100"></div>
+                </div>
+
+            <!--<table class="table w-100">
+                <thead><tr><th>Name</th><th>Command</th><th>Result</th></tr></thead>
+                <tbody></tbody>
+            </table>-->
+        </div>
+    </div>
+    <!--<div class="row">
+        <h2>gumbyJS</h2>
         <div class="col">
             <div class="row">
                 <h4>Input:</h6>
@@ -32,16 +46,15 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js" integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="testData.js"></script>
     <script src="../src/gumbyJS.js"></script>
     <script>
-        let input = document.querySelector("#testInput"),
-            output = document.querySelector("#testOutput");
-
-        input.innerHTML = JSON.stringify(testData, null, 4);
-
+        document.querySelector("#leftpane").querySelector("td").innerHTML = JSON.stringify(testData, null, 2).replace(/\n/g, "<br/>").replace(/\s{2}/g, "&nbsp;&nbsp;");
+        let output = document.querySelector("#testOutput");
+        
         //clone
         output.innerHTML += "<h4>clone:</h4>";
         let clone1 = { name: "mak", children: [ { name: "julie" }, { name: "peter" } ] };
